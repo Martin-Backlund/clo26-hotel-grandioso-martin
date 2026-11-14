@@ -9,5 +9,6 @@ namespace HotelGrandioso.Services
     {
         List<Room> GetAllRooms();
         bool AddBooking(Booking booking);
+        Room? GetRoomByNumber(int roomNumber);
     }
 }

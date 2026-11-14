@@ -30,7 +30,11 @@ namespace HotelGrandioso.Services
                 Console.WriteLine($"Kunde inte genomföra bokningen pga: {ex.Message}");
                 return false;
             }
-            
+
+        }
+        public Room? GetRoomByNumber(int roomNumber)
+        {
+            return _context.Rooms.Include(r => r.RoomType).FirstOrDefault(r => r.RoomNumber == roomNumber);
         }
     }
 }
