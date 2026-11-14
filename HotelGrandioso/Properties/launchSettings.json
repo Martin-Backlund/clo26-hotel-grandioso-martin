@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "HotelGrandioso": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "HOTEL_DB": "Data Source=hotel.db"
+      }
+    }
+  }
+}
