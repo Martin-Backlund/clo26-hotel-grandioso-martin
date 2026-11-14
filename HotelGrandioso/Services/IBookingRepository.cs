@@ -8,5 +8,6 @@ namespace HotelGrandioso.Services
     public interface IBookingRepository
     {
         List<Room> GetAllRooms();
+        bool AddBooking(Booking booking);
     }
 }

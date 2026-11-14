@@ -17,5 +17,20 @@ namespace HotelGrandioso.Services
         {
             return _context.Rooms.Include(r => r.RoomType).ToList();
         }
+        public bool AddBooking(Booking booking)
+        {
+            _context.Bookings.Add(booking);
+            try
+            {
+                _context.SaveChanges();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine($"Kunde inte genomföra bokningen pga: {ex.Message}");
+                return false;
+            }
+            
+        }
     }
 }
