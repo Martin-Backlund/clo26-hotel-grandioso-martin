@@ -14,7 +14,7 @@ namespace HotelGrandioso.UI
         {
             _repository = repository;
         }
-        public void BookRoom()
+        private void BookRoom()
         {
             Console.Write("Gästnamn: "); var name = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(name))
@@ -38,7 +38,7 @@ namespace HotelGrandioso.UI
             }
             foreach (var r in _repository.GetAllRooms())
             {
-                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight}");
+                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}");
             }
             Console.Write($"Välj rum: "); var input3 = Console.ReadLine();
             if (!int.TryParse(input3, out int roomNumber))
@@ -59,14 +59,31 @@ namespace HotelGrandioso.UI
             };
             if (_repository.AddBooking(booking))
             {
-                Console.WriteLine($"Bokning bekräftad! Totalt pris: {booking.TotalPrice():N0}kr\n{booking.Nights()} nätter x {room.PricePerNight:N0}");
+                Console.WriteLine($"Bokning bekräftad! Totalt pris: {booking.TotalPrice():N0}kr\n{booking.Nights()} nätter x {room.PricePerNight:N0}kr");
             }
             else
             {
                 Console.WriteLine("Bokningen kunde inte genomföras");
             }
         }
-            
+            public void UnBookRoom()
+        {
+
+        }
+        public void ShowBookings()
+        {
+            if (_repository.GetBooking() == null)
+            {
+                Console.WriteLine("Inga bokningar");
+            }
+            else
+            {
+                foreach (var b in _repository.GetBooking())
+                {
+                    Console.WriteLine($"{b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
+                }
+            }
+        }
         
         public void Run()
         {
@@ -91,7 +108,7 @@ namespace HotelGrandioso.UI
                 }
                 else if (choice == "3")
                 {
-
+                    ShowBookings();
                 }
                 else if (choice == "4")
                 {

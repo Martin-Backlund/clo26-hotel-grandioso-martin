@@ -37,13 +37,35 @@ namespace HotelGrandioso.Services
         {
             return _context.Rooms.Include(r => r.RoomType).FirstOrDefault(r => r.RoomNumber == roomNumber);
         }
-        public List <Booking> GetBookings()
+        public List <Booking> GetBooking()
         {
             return _context.Bookings.Include(b => b.Guest).
                 Include(b => b.Room).
                 Where(b=> b.CheckOut >= DateOnly.FromDateTime(DateTime.Today)).
                 OrderBy(b => b.CheckIn).
                 ToList();
+        }
+        public bool CancelBooking(int bookingId)
+        {
+            var booking = _context.Bookings.Find(bookingId);
+            if (booking == null)
+            {
+                return false;
+            }
+            else
+            {
+                _context.Bookings.Remove(booking);
+                try
+                {
+                    _context.SaveChanges();
+                    return true;
+                }
+                catch (DbUpdateException e)
+                {
+                    Console.WriteLine($"Något gick fel: {e.Message}");
+                    return false;
+                }
+            }
         }
     }
 }
