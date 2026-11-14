@@ -11,5 +11,6 @@ namespace HotelGrandioso.Services
         bool AddBooking(Booking booking);
         Room? GetRoomByNumber(int roomNumber);
         List<Booking> GetBooking();
+        bool CancelBooking(int bookingId);
     }
 }

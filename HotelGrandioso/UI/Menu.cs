@@ -66,22 +66,48 @@ namespace HotelGrandioso.UI
                 Console.WriteLine("Bokningen kunde inte genomföras");
             }
         }
-            public void UnBookRoom()
+        private void ShowBookings()
         {
-
-        }
-        public void ShowBookings()
-        {
-            if (_repository.GetBooking() == null)
+            var bookings = _repository.GetBooking();
+            if (bookings.Count == 0)
             {
                 Console.WriteLine("Inga bokningar");
+                return;
             }
             else
             {
-                foreach (var b in _repository.GetBooking())
+                foreach (var b in bookings)
                 {
                     Console.WriteLine($"{b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
                 }
+            }
+        }
+        private void CancelBooking()
+        {
+           var bookings = _repository.GetBooking();
+            if (bookings.Count == 0)
+            {
+                Console.WriteLine("Finns inga aktuella bokningar");
+                return;
+            }
+            foreach (var b in bookings)
+            {
+                Console.WriteLine($"{b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
+            }
+            Console.Write("Skriv in boknings-id för att avboka: ");
+            var input = Console.ReadLine();
+            if (!int.TryParse(input, out int id))
+            {
+                Console.WriteLine("Skriv in endast nummer");
+                return;
+            }
+           if (_repository.CancelBooking(id))
+            {
+                Console.WriteLine("Bokningen är avbokad!");
+            }
+           else
+            {
+                Console.WriteLine($"Hittade ingen bokning med id {id}");
             }
         }
         
@@ -104,7 +130,7 @@ namespace HotelGrandioso.UI
                 }
                 else if (choice == "2")
                 {
-
+                    CancelBooking();
                 }
                 else if (choice == "3")
                 {
