@@ -15,3 +15,4 @@ namespace HotelGrandioso.Models
         public RoomType RoomType { get; set; } = null!;
     }
 }
+    
