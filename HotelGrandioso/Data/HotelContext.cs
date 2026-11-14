@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelGrandioso.Data
 {
-     class HotelContext : DbContext
+     public class HotelContext : DbContext
     {
         public DbSet<Room> Rooms => Set<Room>();
         public DbSet<RoomType> RoomTypes => Set<RoomType>();
