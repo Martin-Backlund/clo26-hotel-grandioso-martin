@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
 using HotelGrandioso.Data;
 using HotelGrandioso.Models;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,14 @@ namespace HotelGrandioso.Services
         public Room? GetRoomByNumber(int roomNumber)
         {
             return _context.Rooms.Include(r => r.RoomType).FirstOrDefault(r => r.RoomNumber == roomNumber);
+        }
+        public List <Booking> GetBookings()
+        {
+            return _context.Bookings.Include(b => b.Guest).
+                Include(b => b.Room).
+                Where(b=> b.CheckOut >= DateOnly.FromDateTime(DateTime.Today)).
+                OrderBy(b => b.CheckIn).
+                ToList();
         }
     }
 }

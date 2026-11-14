@@ -40,7 +40,7 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight}");
             }
-            Console.WriteLine($"Välj rum: "); var input3 = Console.ReadLine();
+            Console.Write($"Välj rum: "); var input3 = Console.ReadLine();
             if (!int.TryParse(input3, out int roomNumber))
             {
                 Console.WriteLine("Skriv endast nummer"); return;
