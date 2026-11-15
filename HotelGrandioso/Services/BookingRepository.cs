@@ -72,6 +72,9 @@ namespace HotelGrandioso.Services
             return _context.Bookings.Any(b => b.RoomId == roomId && b.CheckIn < checkOut && b.CheckOut > checkIn);
            
         }
-
+        public List<Room> GetFreeRooms(DateOnly checkIn, DateOnly checkOut)
+        {
+          return _context.Rooms.Include(r => r.RoomType).Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id && b.CheckIn < checkOut && b.CheckOut > checkIn)).OrderBy(r=> r.RoomNumber).ToList() ;
+        }
     }
 }
