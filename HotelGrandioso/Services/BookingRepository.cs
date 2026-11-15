@@ -16,7 +16,7 @@ namespace HotelGrandioso.Services
         }
         public List<Room> GetAllRooms()
         {
-            return _context.Rooms.Include(r => r.RoomType).ToList();
+            return _context.Rooms.Include(r => r.RoomType).OrderBy(r=> r.RoomNumber).ToList();
         }
         public bool AddBooking(Booking booking)
         {
@@ -37,7 +37,7 @@ namespace HotelGrandioso.Services
         {
             return _context.Rooms.Include(r => r.RoomType).FirstOrDefault(r => r.RoomNumber == roomNumber);
         }
-        public List<Booking> GetBooking()
+        public List<Booking> GetBookings()
         {
             return _context.Bookings.Include(b => b.Guest).
                 Include(b => b.Room).
