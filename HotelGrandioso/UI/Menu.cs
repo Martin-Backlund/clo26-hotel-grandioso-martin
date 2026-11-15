@@ -37,6 +37,11 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine("Utcheckning måste vara efter Incheckning"); return;
             }
+            else if (checkIn < DateOnly.FromDateTime(DateTime.Today))
+                {
+                Console.WriteLine("Datumet har redan passerat");
+                return;
+            }
             foreach (var r in _repository.GetAllRooms())
             {
                 Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}");
@@ -138,6 +143,11 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine("Ogiltigt datum"); return;
             }
+            else if (inCheck< DateOnly.FromDateTime(DateTime.Today))
+            {
+                Console.WriteLine("Datumet har redan passerat");
+                return;
+            }
             var freeRooms = _repository.GetFreeRooms(inCheck, outCheck);
           
            if (freeRooms.Count == 0)
@@ -165,10 +175,15 @@ namespace HotelGrandioso.UI
                 Console.WriteLine($"Ogiltigt datum: {input}");
                 return;
             }
+            else if (date < DateOnly.FromDateTime(DateTime.Today))
+            {
+                Console.WriteLine("Datumet har redan passerat");
+                return;
+            }
             var treatments = _repository.GetAllTreatments();
             foreach (var t in treatments)
             {
-                Console.WriteLine($"Id: {t.Id}. {t.Name} - {t.DurationMinutes} min - {t.Price}kr");
+                Console.WriteLine($"Id: {t.Id}. {t.Name} - {t.DurationMinutes} min - {t.Price:N0}kr");
             }
             Console.Write("Välj behandling (Id):"); var input2 = Console.ReadLine();
             if (!int.TryParse(input2, out int choice))
@@ -186,7 +201,7 @@ namespace HotelGrandioso.UI
             if (_repository.AddSpaBooking(spaBooking))
             {
                 Console.WriteLine("Bokning bekräftad!");
-                Console.WriteLine($"{spaBooking.Guest.Name} -{spaBooking.Treatment.Name} Pris: {treatment.Price:N0} - {spaBooking.Date} ");
+                Console.WriteLine($"{spaBooking.Guest.Name} -{spaBooking.Treatment.Name} Pris: {treatment.Price:N0}kr - {spaBooking.Date} ");
                 return;
             }
             else
