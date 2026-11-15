@@ -18,6 +18,7 @@ namespace HotelGrandioso.UI
         private void BookRoom()
         {
             Console.Write("Gästnamn: "); var name = Console.ReadLine();
+            //vakt som avbryter så ogitlig data inte sparas
             if (string.IsNullOrWhiteSpace(name))
             {
                 Console.WriteLine($"Ogiltigt namn: {name}");
@@ -33,10 +34,12 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine("Ogiltigt datum"); return;
             }
+            //minst en natt krävs, kan inte checka ut innan man checkat in
             else if (checkOut <= checkIn)
             {
                 Console.WriteLine("Utcheckning måste vara efter Incheckning"); return;
             }
+            //går inte att boka datum som passerat
             else if (checkIn < DateOnly.FromDateTime(DateTime.Today))
             {
                 Console.WriteLine("Datumet har redan passerat");
@@ -57,6 +60,7 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine("Skriv endast nummer"); return;
             }
+            //användaren skriver in rummsnummer men databasen kräver rummets id
             var room = _repository.GetRoomByNumber(roomNumber);
             if (room == null)
             {
@@ -84,7 +88,7 @@ namespace HotelGrandioso.UI
         }
         private void ShowBookings()
         {
-            var bookings = _repository.GetBooking();
+            var bookings = _repository.GetBookings();
             if (bookings.Count == 0)
             {
                 Console.WriteLine("Inga bokningar");
@@ -100,7 +104,7 @@ namespace HotelGrandioso.UI
         }
         private void CancelBooking()
         {
-            var bookings = _repository.GetBooking();
+            var bookings = _repository.GetBookings();
             if (bookings.Count == 0)
             {
                 Console.WriteLine("Finns inga aktuella bokningar");

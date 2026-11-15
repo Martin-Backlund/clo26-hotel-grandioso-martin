@@ -7,6 +7,7 @@ using HotelGrandioso.Models;
 using Microsoft.EntityFrameworkCore;
 namespace HotelGrandioso.Services
 {
+    //All databas kod här, resten av programmet pratar bara med interfacet
     public class BookingRepository : IBookingRepository
     {
         private readonly HotelContext _context;
@@ -16,19 +17,20 @@ namespace HotelGrandioso.Services
         }
         public List<Room> GetAllRooms()
         {
-            return _context.Rooms.Include(r => r.RoomType).OrderBy(r=> r.RoomNumber).ToList();
+            //Include för att RoomType inte ska bli null
+            return _context.Rooms.Include(r => r.RoomType).OrderBy(r => r.RoomNumber).ToList();
         }
         public bool AddBooking(Booking booking)
         {
             _context.Bookings.Add(booking);
+            //Databasen kan vara otillgänglig 
             try
             {
                 _context.SaveChanges();
                 return true;
             }
-            catch (DbUpdateException ex)
+            catch
             {
-                Console.WriteLine($"Kunde inte genomföra bokningen pga: {ex.Message}");
                 return false;
             }
 
@@ -41,12 +43,13 @@ namespace HotelGrandioso.Services
         {
             return _context.Bookings.Include(b => b.Guest).
                 Include(b => b.Room).
-                Where(b => b.CheckOut >= DateOnly.FromDateTime(DateTime.Today)).
+                Where(b => b.CheckOut >= DateOnly.FromDateTime(DateTime.Today)).//visar bara bokningr som inte redan är utcheckade
                 OrderBy(b => b.CheckIn).
                 ToList();
         }
         public bool CancelBooking(int bookingId)
         {
+            //Find söker på PrimaryKey och ger null om bokningen inte finns
             var booking = _context.Bookings.Find(bookingId);
             if (booking == null)
             {
@@ -60,21 +63,26 @@ namespace HotelGrandioso.Services
                     _context.SaveChanges();
                     return true;
                 }
-                catch (DbUpdateException e)
+                catch
                 {
-                    Console.WriteLine($"Något gick fel: {e.Message}");
                     return false;
                 }
             }
         }
+        //Två bokningar krockar om den ena börjar innan den andra slutar
+        // "<" istället för "<=" så att en gäst kan checka in samma dag som en annan gäst checkar ut
         public bool IsBooked(int roomId, DateOnly checkIn, DateOnly checkOut)
         {
             return _context.Bookings.Any(b => b.RoomId == roomId && b.CheckIn < checkOut && b.CheckOut > checkIn);
 
         }
+        //Alla rum som inte är bokade på datumen
         public List<Room> GetFreeRooms(DateOnly checkIn, DateOnly checkOut)
         {
-            return _context.Rooms.Include(r => r.RoomType).Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id && b.CheckIn < checkOut && b.CheckOut > checkIn)).OrderBy(r => r.RoomNumber).ToList();
+            return _context.Rooms.Include(r => r.RoomType).
+                Where(r => !_context.Bookings.
+                Any(b => b.RoomId == r.Id && b.CheckIn < checkOut && b.CheckOut > checkIn)).
+                OrderBy(r => r.RoomNumber).ToList();
         }
         public List<Treatment> GetAllTreatments()
         {
@@ -92,11 +100,10 @@ namespace HotelGrandioso.Services
                 _context.SaveChanges();
                 return true;
             }
-            catch (DbUpdateException e)
+            catch
             {
-                Console.WriteLine($"Något gick fel: {e.Message}");
                 return false;
             }
         }
     }
-    }
+}
