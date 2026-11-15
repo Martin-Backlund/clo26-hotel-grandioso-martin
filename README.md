@@ -1,6 +1,6 @@
 # Hotel Grandioso — Inlämning 1
 
-**Namn:** [ditt namn]
+**Namn:** Martin Bäcklund
 
 ## Så kör du projektet
 
@@ -78,13 +78,13 @@ classDiagram
 
 Utvärdera fälten i `Guest` ett i taget. Vad bygger du in, och varför?
 
->
+>Jag valde att endast bygga in relevant och nödvändig information. Vad för hårfärg, längd och religonstillhörighet är irellevant för projektets ändamål. Religon anses också vara en känslig uppgift och kräver uttryckligt samtycke samt extra skydd. Name var den enda relevanta då hotellet måste veta vem bokningen tillhör.
 
 ## Designmönster
 
 Beskriv det designmönster du använt (till exempel Repository), vad det gör och varför du valde det.
 
->
+>Jag har använt mig av repository mönstret. All kod som pratar med databasen ligger i BookingRepository. Klassen har metoder som AddBooking, CancelBooking, GetFreeRooms och IsBooked. Ingen annan del i programmet använder HotelContext direkt. IBookingRepository beskriver vad som går att göra, inte hur det ska göras. Varje klass har ett tydligt anvsar; menu sköter inmatning och usktrift, BookingRepository sköter databasen och modellerna innehåller endast data och enkel logik.
 
 ## Tekniker
 
