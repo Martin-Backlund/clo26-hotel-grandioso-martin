@@ -1,5 +1,6 @@
 ﻿using HotelGrandioso.Models;
 using HotelGrandioso.Services;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -92,7 +93,7 @@ namespace HotelGrandioso.UI
             }
             foreach (var b in bookings)
             {
-                Console.WriteLine($"{b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
+                Console.WriteLine($"ID: {b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
             }
             Console.Write("Skriv in boknings-id för att avboka: ");
             var input = Console.ReadLine();
@@ -110,6 +111,18 @@ namespace HotelGrandioso.UI
                 Console.WriteLine($"Hittade ingen bokning med id {id}");
             }
         }
+        private void ShowAllRooms()
+        {
+            foreach (var r in _repository.GetAllRooms())
+            {
+                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}");
+            }
+        }
+        public void ShowAllFreeRooms()
+        {
+            
+           
+        }
         
         public void Run()
         {
@@ -119,9 +132,10 @@ namespace HotelGrandioso.UI
                 Console.WriteLine("1. Boka rum");
                 Console.WriteLine("2. Avboka");
                 Console.WriteLine("3. Visa bokningar");
-                Console.WriteLine("4. Visa lediga rum") ;
-                Console.WriteLine("5. Boka spa") ;
-                Console.WriteLine("6. Avsluta") ;
+                Console.WriteLine("4. Visa alla rum");
+                Console.WriteLine("5. Visa lediga rum") ;
+                Console.WriteLine("6. Boka spa") ;
+                Console.WriteLine("7. Avsluta") ;
                 Console.Write("Val:"); string? choice = Console.ReadLine();
 
                 if (choice == "1")
@@ -138,13 +152,17 @@ namespace HotelGrandioso.UI
                 }
                 else if (choice == "4")
                 {
-
+                    ShowAllRooms();
                 }
                 else if (choice == "5")
                 {
-
+                    ShowAllFreeRooms();
                 }
                 else if (choice == "6")
+                {
+
+                }
+                else if (choice == "7")
                 {
                     run = false;
                 }

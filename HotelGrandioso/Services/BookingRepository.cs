@@ -67,6 +67,11 @@ namespace HotelGrandioso.Services
                 }
             }
         }
-      
+        public bool IsBooked(int roomId, DateOnly checkIn, DateOnly checkOut)
+        {
+            return _context.Bookings.Any(b => b.RoomId == roomId && b.CheckIn < checkOut && b.CheckOut > checkIn);
+           
+        }
+
     }
 }

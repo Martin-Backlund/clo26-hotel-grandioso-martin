@@ -12,5 +12,7 @@ namespace HotelGrandioso.Services
         Room? GetRoomByNumber(int roomNumber);
         List<Booking> GetBooking();
         bool CancelBooking(int bookingId);
+
+        bool IsBooked(int roomId, DateOnly checkIn, DateOnly checkOut);
     }
 }
