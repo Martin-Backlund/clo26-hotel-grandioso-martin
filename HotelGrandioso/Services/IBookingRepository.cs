@@ -10,7 +10,7 @@ namespace HotelGrandioso.Services
         List<Room> GetAllRooms();
         bool AddBooking(Booking booking);
         Room? GetRoomByNumber(int roomNumber);
-        List<Booking> GetBooking();
+        List<Booking> GetBookings();
         bool CancelBooking(int bookingId);
         List<Room> GetFreeRooms(DateOnly checkIn, DateOnly checkOut);
         bool IsBooked(int roomId, DateOnly checkIn, DateOnly checkOut);

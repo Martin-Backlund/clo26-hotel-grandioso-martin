@@ -16,10 +16,12 @@ namespace HotelGrandioso.Models
         
         public int Nights()
         {
+            //DayNumber ger antal dagar mellan datumen alltså antal nätter
             return CheckOut.DayNumber - CheckIn.DayNumber;
         }
         public decimal TotalPrice()
         {
+            //Priset räknas ut men sparas inte ifall att man behöver ändra priset
             return Nights() * Room.PricePerNight;
         }
     }
