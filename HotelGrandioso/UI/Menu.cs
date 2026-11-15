@@ -51,6 +51,10 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine("Rummet finns inte"); return;
             }
+            if (_repository.IsBooked(room.Id, checkIn, checkOut))
+            {
+                Console.WriteLine($"Rummet är tyvärr redan bokat dessa datum {checkIn} - {checkOut}"); return;
+            }
             var booking = new Booking()
             {
                 Guest = new Guest { Name = name },
