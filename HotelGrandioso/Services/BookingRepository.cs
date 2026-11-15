@@ -10,7 +10,7 @@ namespace HotelGrandioso.Services
     public class BookingRepository : IBookingRepository
     {
         private readonly HotelContext _context;
-        public BookingRepository (HotelContext context)
+        public BookingRepository(HotelContext context)
         {
             _context = context;
         }
@@ -37,11 +37,11 @@ namespace HotelGrandioso.Services
         {
             return _context.Rooms.Include(r => r.RoomType).FirstOrDefault(r => r.RoomNumber == roomNumber);
         }
-        public List <Booking> GetBooking()
+        public List<Booking> GetBooking()
         {
             return _context.Bookings.Include(b => b.Guest).
                 Include(b => b.Room).
-                Where(b=> b.CheckOut >= DateOnly.FromDateTime(DateTime.Today)).
+                Where(b => b.CheckOut >= DateOnly.FromDateTime(DateTime.Today)).
                 OrderBy(b => b.CheckIn).
                 ToList();
         }
@@ -70,11 +70,33 @@ namespace HotelGrandioso.Services
         public bool IsBooked(int roomId, DateOnly checkIn, DateOnly checkOut)
         {
             return _context.Bookings.Any(b => b.RoomId == roomId && b.CheckIn < checkOut && b.CheckOut > checkIn);
-           
+
         }
         public List<Room> GetFreeRooms(DateOnly checkIn, DateOnly checkOut)
         {
-          return _context.Rooms.Include(r => r.RoomType).Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id && b.CheckIn < checkOut && b.CheckOut > checkIn)).OrderBy(r=> r.RoomNumber).ToList() ;
+            return _context.Rooms.Include(r => r.RoomType).Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id && b.CheckIn < checkOut && b.CheckOut > checkIn)).OrderBy(r => r.RoomNumber).ToList();
+        }
+        public List<Treatment> GetAllTreatments()
+        {
+            return _context.Treatments.ToList(); //ingen include då Treatment inte har någon koppling som ska laddas
+        }
+        public Treatment? GetTreatmentById(int id)
+        {
+            return _context.Treatments.Find(id);
+        }
+        public bool AddSpaBooking(SpaBooking spaBooking)
+        {
+            _context.SpaBookings.Add(spaBooking);
+            try
+            {
+                _context.SaveChanges();
+                return true;
+            }
+            catch (DbUpdateException e)
+            {
+                Console.WriteLine($"Något gick fel: {e.Message}");
+                return false;
+            }
         }
     }
-}
+    }

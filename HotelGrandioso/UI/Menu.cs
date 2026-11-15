@@ -20,7 +20,7 @@ namespace HotelGrandioso.UI
             Console.Write("Gästnamn: "); var name = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(name))
             {
-                Console.WriteLine("Bokningen kräver ett namn");
+                Console.WriteLine($"Ogiltigt namn: {name}");
                 return;
             }
             Console.Write("Inchecknings datum (YYYY-MM-DD): "); var input = Console.ReadLine();
@@ -151,6 +151,49 @@ namespace HotelGrandioso.UI
                 Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}kr");
             }
         }
+        private void BookSpa()
+        {
+            Console.Write("Gästnamn: "); var name = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                Console.WriteLine($"Ogiltigt namn: {name}");
+                return;
+            }
+            Console.Write("Skriv in datum (YYYY-MM-DD): "); var input = Console.ReadLine();
+            if (!DateOnly.TryParse(input, out DateOnly date))
+            {
+                Console.WriteLine($"Ogiltigt datum: {input}");
+                return;
+            }
+            var treatments = _repository.GetAllTreatments();
+            foreach (var t in treatments)
+            {
+                Console.WriteLine($"Id: {t.Id}. {t.Name} - {t.DurationMinutes} min - {t.Price}kr");
+            }
+            Console.Write("Välj behandling (Id):"); var input2 = Console.ReadLine();
+            if (!int.TryParse(input2, out int choice))
+            {
+                Console.WriteLine($"Ogiltigt val: {input2}");
+                return;
+            }
+           var treatment = _repository.GetTreatmentById(choice);
+            if (treatment== null)
+            {
+                Console.WriteLine("Ogiltigt val");
+                return;
+            }
+            var spaBooking = new SpaBooking { Guest = new Guest { Name = name }, Date = date, Treatment = treatment };
+            if (_repository.AddSpaBooking(spaBooking))
+            {
+                Console.WriteLine("Bokning bekräftad!");
+                Console.WriteLine($"{spaBooking.Guest.Name} -{spaBooking.Treatment.Name} Pris: {treatment.Price:N0} - {spaBooking.Date} ");
+                return;
+            }
+            else
+            {
+                Console.WriteLine($"Bokning misslyckades");
+            }
+        }
         
         public void Run()
         {
@@ -188,7 +231,7 @@ namespace HotelGrandioso.UI
                 }
                 else if (choice == "6")
                 {
-
+                    BookSpa();
                 }
                 else if (choice == "7")
                 {

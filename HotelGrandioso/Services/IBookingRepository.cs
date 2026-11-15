@@ -15,5 +15,8 @@ namespace HotelGrandioso.Services
         List<Room> GetFreeRooms(DateOnly checkIn, DateOnly checkOut);
         bool IsBooked(int roomId, DateOnly checkIn, DateOnly checkOut);
 
+        List<Treatment> GetAllTreatments();
+        Treatment? GetTreatmentById(int id);
+        bool AddSpaBooking(SpaBooking spaBooking);
     }
 }
