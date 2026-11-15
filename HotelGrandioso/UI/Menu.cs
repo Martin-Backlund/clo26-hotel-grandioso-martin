@@ -119,13 +119,37 @@ namespace HotelGrandioso.UI
         {
             foreach (var r in _repository.GetAllRooms())
             {
-                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}");
+                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}kr");
             }
         }
-        public void ShowAllFreeRooms()
+        private void ShowAllFreeRooms()
         {
-            
-           
+            Console.Write("Skriv in inchecknings-datum (YYYY-MM-DD): ");  var input = Console.ReadLine();
+            if (!DateOnly.TryParse(input, out DateOnly inCheck))
+            {
+                Console.WriteLine($"{input} är ett ogiltigt datum"); return;
+            }
+            Console.Write("Skriv in utchecknings-datum (YYYY-MM-DD): "); var input2 = Console.ReadLine();
+            if (!DateOnly.TryParse(input2, out DateOnly outCheck))
+            {
+                Console.WriteLine($"{input2} är ett ogiltigt datum"); return;
+            }
+            if (inCheck >= outCheck)
+            {
+                Console.WriteLine("Ogiltigt datum"); return;
+            }
+            var freeRooms = _repository.GetFreeRooms(inCheck, outCheck);
+          
+           if (freeRooms.Count == 0)
+            {
+                Console.WriteLine($"Inga lediga rum {inCheck} - {outCheck}"); return;
+            }
+         
+            Console.WriteLine("Lediga rum:");
+            foreach (var r in freeRooms)
+            {
+                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}kr");
+            }
         }
         
         public void Run()
