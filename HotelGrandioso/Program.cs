@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using var context = new HotelContext();
 
 context.Database.Migrate();
-DbHandler.Create(context);
+DbHandler.CreateRooms(context);
+DbHandler.CreateTreatments(context);
 
 IBookingRepository repository = new BookingRepository(context);
 Console.WriteLine("=== Hotel Grandioso ===");

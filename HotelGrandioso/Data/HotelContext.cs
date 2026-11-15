@@ -12,6 +12,8 @@ namespace HotelGrandioso.Data
         public DbSet<RoomType> RoomTypes => Set<RoomType>();
         public DbSet<Guest> Guests => Set<Guest>();
         public DbSet<Booking> Bookings => Set<Booking>();
+        public DbSet<Treatment> Treatments => Set<Treatment>();
+        public DbSet<SpaBooking> SpaBookings => Set<SpaBooking>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {

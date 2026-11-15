@@ -8,7 +8,7 @@ namespace HotelGrandioso.Data
 {// en klass som skapar och kopplar samman rummen för att hålla program.cs kort
     public static class DbHandler
     {
-        public static void Create(HotelContext context)
+        public static void CreateRooms(HotelContext context)
         {
             if (context.RoomTypes.Any()) return; //Skapa rummen en gång endast för att inte dubblera alla rum
             var standard = new RoomType { Name = "Standard", Description = "Enkelbädd, inget fönster" };
@@ -29,6 +29,16 @@ namespace HotelGrandioso.Data
             }
             context.Rooms.Add(new Room { RoomNumber = 304, Floor = 3, SizeM2 = 180, PricePerNight = 2800, RoomType = lyxsvit });
             context.Rooms.Add(new Room { RoomNumber = 305, Floor = 3, SizeM2 = 220, PricePerNight = 3500, RoomType = brollopsvit });
+            context.SaveChanges();
+            
+        }
+        public static void CreateTreatments(HotelContext context)
+        {
+            if (context.Treatments.Any()) return;
+            context.Treatments.Add(new Treatment { Name = "Entré (per timme)", DurationMinutes = 60, Price = 150 });
+            context.Treatments.Add(new Treatment { Name = "Massage", DurationMinutes = 60, Price = 950 });
+            context.Treatments.Add(new Treatment { Name = "Pedikyr (obs endast stortån)", DurationMinutes = 30, Price = 350 });
+            context.Treatments.Add(new Treatment { Name = "Pedikyr (Hela foten)", DurationMinutes = 60, Price = 650 });
             context.SaveChanges();
         }
     }
