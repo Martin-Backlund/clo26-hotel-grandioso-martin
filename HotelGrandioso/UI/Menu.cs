@@ -11,52 +11,53 @@ namespace HotelGrandioso.UI
     public class Menu
     {
         private readonly IBookingRepository _repository;
-        public Menu(IBookingRepository repository)
+        private readonly MenuHandler _menuHandler;
+        public Menu(IBookingRepository repository, MenuHandler menuHandler)
         {
             _repository = repository;
+            _menuHandler = menuHandler;
         }
         private void BookRoom()
         {
-            Console.Write("Gästnamn: "); var name = Console.ReadLine();
-            //vakt som avbryter så ogitlig data inte sparas
-            if (string.IsNullOrWhiteSpace(name))
+            var name = _menuHandler.ReadGuestName();
+            if (name == null)
             {
-                Console.WriteLine($"Ogiltigt namn: {name}");
+                Console.WriteLine("Ogiltigt namn");
                 return;
             }
-            Console.Write("Inchecknings datum (YYYY-MM-DD): "); var input = Console.ReadLine();
-            if (!DateOnly.TryParse(input, out DateOnly checkIn))
+            var checkIn = _menuHandler.ReadDate("Skriv in inchecknings-datum");
+            if (checkIn == null)
             {
-                Console.WriteLine("Ogiltigt datum"); return;
+                Console.WriteLine("Ogiltigt datum");
+                return;
             }
-            Console.Write("Utchecknings datum (YYYY-MM-DD): "); var input2 = Console.ReadLine();
-            if (!DateOnly.TryParse(input2, out DateOnly checkOut))
-            {
-                Console.WriteLine("Ogiltigt datum"); return;
-            }
-            //minst en natt krävs, kan inte checka ut innan man checkat in
-            else if (checkOut <= checkIn)
-            {
-                Console.WriteLine("Utcheckning måste vara efter Incheckning"); return;
-            }
-            //går inte att boka datum som passerat
-            else if (checkIn < DateOnly.FromDateTime(DateTime.Today))
+            if (_menuHandler.DayHasPassed(checkIn.Value))
             {
                 Console.WriteLine("Datumet har redan passerat");
                 return;
             }
-            var freeRooms = _repository.GetFreeRooms(checkIn, checkOut);
+            var checkOut = _menuHandler.ReadDate("Skriv in utchecknings-datum");
+            if (checkOut == null)
+            {
+                Console.WriteLine("Ogiltigt datum");
+                return;
+            }
+            if (!_menuHandler.IsDateValid(checkIn.Value, checkOut.Value))
+            {
+                Console.WriteLine("Ogiltigt datum");
+                return;
+            }
+
+            var freeRooms = _repository.GetFreeRooms(checkIn.Value, checkOut.Value);
             if (freeRooms.Count == 0)
             {
                 Console.WriteLine($"Finns inga lediga rum: {checkIn} - {checkOut}");
                 return;
             }
-            foreach (var r in freeRooms)
-            {
-                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}kr");
-            }
-            Console.Write($"Välj rum: "); var input3 = Console.ReadLine();
-            if (!int.TryParse(input3, out int roomNumber))
+            _menuHandler.PrintFreeRooms(freeRooms);
+            Console.Write($"Välj rum (Rumsnummer): ");
+            var input = Console.ReadLine();
+            if (!int.TryParse(input, out int roomNumber))
             {
                 Console.WriteLine("Skriv endast nummer"); return;
             }
@@ -66,20 +67,21 @@ namespace HotelGrandioso.UI
             {
                 Console.WriteLine("Rummet finns inte"); return;
             }
-            if (_repository.IsBooked(room.Id, checkIn, checkOut))
+            if (_repository.IsBooked(room.Id, checkIn.Value, checkOut.Value))
             {
-                Console.WriteLine($"Rummet är tyvärr redan bokat dessa datum {checkIn} - {checkOut}"); return;
+                Console.WriteLine($"Rummet är tyvärr redan bokat dessa datum {checkIn} - {checkOut}");
+                return;
             }
             var booking = new Booking()
             {
                 Guest = new Guest { Name = name },
                 Room = room,
-                CheckIn = checkIn,
-                CheckOut = checkOut
+                CheckIn = checkIn.Value,
+                CheckOut = checkOut.Value
             };
             if (_repository.AddBooking(booking))
             {
-                Console.WriteLine($"Bokning bekräftad! Totalt pris: {booking.TotalPrice():N0}kr\n{booking.Nights()} nätter x {room.PricePerNight:N0}kr");
+                Console.WriteLine($"Bokning bekräftad! Totalt pris: {booking.TotalPrice():C}\n{booking.Nights()} nätter x {room.PricePerNight:C}");
             }
             else
             {
@@ -96,10 +98,7 @@ namespace HotelGrandioso.UI
             }
             else
             {
-                foreach (var b in bookings)
-                {
-                    Console.WriteLine($"{b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
-                }
+                _menuHandler.PrintRoomBookings(bookings);
             }
         }
         private void CancelBooking()
@@ -110,10 +109,8 @@ namespace HotelGrandioso.UI
                 Console.WriteLine("Finns inga aktuella bokningar");
                 return;
             }
-            foreach (var b in bookings)
-            {
-                Console.WriteLine($"ID: {b.Id} - {b.Guest.Name} - Rum {b.Room.RoomNumber} - {b.CheckIn} - {b.CheckOut}");
-            }
+            _menuHandler.PrintRoomBookings(bookings);
+
             Console.Write("Skriv in boknings-id för att avboka: ");
             var input = Console.ReadLine();
             if (!int.TryParse(input, out int id))
@@ -132,33 +129,35 @@ namespace HotelGrandioso.UI
         }
         private void ShowAllRooms()
         {
-            foreach (var r in _repository.GetAllRooms())
-            {
-                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}kr");
-            }
+            var rooms = _repository.GetAllRooms();
+            _menuHandler.PrintAllRooms(rooms);
         }
         private void ShowAllFreeRooms()
         {
-            Console.Write("Skriv in inchecknings-datum (YYYY-MM-DD): "); var input = Console.ReadLine();
-            if (!DateOnly.TryParse(input, out DateOnly inCheck))
+            var inCheck = _menuHandler.ReadDate("Skriv in inchecknings-datum");
+            if (inCheck == null)
             {
-                Console.WriteLine($"{input} är ett ogiltigt datum"); return;
+                Console.WriteLine("Ogiltigt datum");
+                return;
             }
-            Console.Write("Skriv in utchecknings-datum (YYYY-MM-DD): "); var input2 = Console.ReadLine();
-            if (!DateOnly.TryParse(input2, out DateOnly outCheck))
-            {
-                Console.WriteLine($"{input2} är ett ogiltigt datum"); return;
-            }
-            if (inCheck >= outCheck)
-            {
-                Console.WriteLine("Ogiltigt datum"); return;
-            }
-            else if (inCheck < DateOnly.FromDateTime(DateTime.Today))
+            if (_menuHandler.DayHasPassed(inCheck.Value))
             {
                 Console.WriteLine("Datumet har redan passerat");
                 return;
             }
-            var freeRooms = _repository.GetFreeRooms(inCheck, outCheck);
+            var outCheck = _menuHandler.ReadDate("Skriv in utchecknings-datum");
+            if (outCheck == null)
+            {
+                Console.WriteLine("Ogiltigt datum");
+                return;
+            }
+            if (!_menuHandler.IsDateValid(inCheck.Value, outCheck.Value))
+            {
+                Console.WriteLine("Ogiltigt datum");
+                return;
+            }
+
+            var freeRooms = _repository.GetFreeRooms(inCheck.Value, outCheck.Value);
 
             if (freeRooms.Count == 0)
             {
@@ -166,26 +165,24 @@ namespace HotelGrandioso.UI
             }
 
             Console.WriteLine("Lediga rum:");
-            foreach (var r in freeRooms)
-            {
-                Console.WriteLine($"{r.RoomNumber} - {r.RoomType.Name} Pris/natt: {r.PricePerNight:N0}kr");
-            }
+            _menuHandler.PrintFreeRooms(freeRooms);
         }
         private void BookSpa()
         {
-            Console.Write("Gästnamn: "); var name = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(name))
+            var name = _menuHandler.ReadGuestName();
+            if (name == null)
             {
-                Console.WriteLine($"Ogiltigt namn: {name}");
+                Console.WriteLine("Ogiltigt namn");
                 return;
             }
-            Console.Write("Skriv in datum (YYYY-MM-DD): "); var input = Console.ReadLine();
-            if (!DateOnly.TryParse(input, out DateOnly date))
+            var date = _menuHandler.ReadDate("Skriv in datum");
+            if (date == null)
             {
-                Console.WriteLine($"Ogiltigt datum: {input}");
+                Console.WriteLine("Ogiltigt datum");
                 return;
             }
-            else if (date < DateOnly.FromDateTime(DateTime.Today))
+
+            if (_menuHandler.DayHasPassed(date.Value))
             {
                 Console.WriteLine("Datumet har redan passerat");
                 return;
@@ -193,7 +190,7 @@ namespace HotelGrandioso.UI
             var treatments = _repository.GetAllTreatments();
             foreach (var t in treatments)
             {
-                Console.WriteLine($"Id: {t.Id}. {t.Name} - {t.DurationMinutes} min - {t.Price:N0}kr");
+                Console.WriteLine($"Id: {t.Id}. {t.Name} - {t.DurationMinutes} min - {t.Price:C}");
             }
             Console.Write("Välj behandling (Id):"); var input2 = Console.ReadLine();
             if (!int.TryParse(input2, out int choice))
@@ -207,11 +204,11 @@ namespace HotelGrandioso.UI
                 Console.WriteLine("Ogiltigt val");
                 return;
             }
-            var spaBooking = new SpaBooking { Guest = new Guest { Name = name }, Date = date, Treatment = treatment };
+            var spaBooking = new SpaBooking { Guest = new Guest { Name = name }, Date = date.Value, Treatment = treatment };
             if (_repository.AddSpaBooking(spaBooking))
             {
                 Console.WriteLine("Bokning bekräftad!");
-                Console.WriteLine($"{spaBooking.Guest.Name} - {spaBooking.Treatment.Name} Pris: {treatment.Price:N0}kr - {spaBooking.Date} ");
+                Console.WriteLine($"{spaBooking.Guest.Name} - {spaBooking.Treatment.Name} Pris: {treatment.Price:C} - {spaBooking.Date} ");
                 return;
             }
             else
