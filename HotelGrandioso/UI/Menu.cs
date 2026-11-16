@@ -234,37 +234,32 @@ namespace HotelGrandioso.UI
                 Console.WriteLine("7. Avsluta");
                 Console.Write("Val:"); string? choice = Console.ReadLine();
 
-                if (choice == "1")
+                switch (choice)
                 {
-                    BookRoom();
-                }
-                else if (choice == "2")
-                {
-                    CancelBooking();
-                }
-                else if (choice == "3")
-                {
-                    ShowBookings();
-                }
-                else if (choice == "4")
-                {
-                    ShowAllRooms();
-                }
-                else if (choice == "5")
-                {
-                    ShowAllFreeRooms();
-                }
-                else if (choice == "6")
-                {
-                    BookSpa();
-                }
-                else if (choice == "7")
-                {
-                    run = false;
-                }
-                else
-                {
-                    Console.WriteLine("Ogiltigt val, försök igen");
+                    case "1":
+                        BookRoom();
+                        break;
+                    case "2":
+                        CancelBooking();
+                        break;
+                    case "3":
+                        ShowBookings();
+                        break;
+                    case "4":
+                        ShowAllRooms();
+                        break;
+                    case "5":
+                        ShowAllFreeRooms();
+                        break;
+                    case "6":
+                        BookSpa();
+                        break;
+                    case "7":
+                        run = false;
+                        break;
+                    default:
+                        Console.WriteLine("Ogiltigt val, försök igen");
+                        break;
                 }
             }
         }
