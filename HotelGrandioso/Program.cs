@@ -11,6 +11,6 @@ DbHandler.CreateTreatments(context);
 
 IBookingRepository repository = new BookingRepository(context);
 MenuHandler menuHandler = new MenuHandler();
-Console.WriteLine("=== Hotel Grandioso ===");
 var menu = new Menu(repository,menuHandler);
-menu.Run();
+
+menu.StartMenu();

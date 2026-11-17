@@ -59,13 +59,15 @@ namespace HotelGrandioso.UI
             var input = Console.ReadLine();
             if (!int.TryParse(input, out int roomNumber))
             {
-                Console.WriteLine("Skriv endast nummer"); return;
+                Console.WriteLine("Skriv endast nummer");
+                return;
             }
             //användaren skriver in rummsnummer men databasen kräver rummets id
             var room = _repository.GetRoomByNumber(roomNumber);
             if (room == null)
             {
-                Console.WriteLine("Rummet finns inte"); return;
+                Console.WriteLine("Rummet finns inte");
+                return;
             }
             if (_repository.IsBooked(room.Id, checkIn.Value, checkOut.Value))
             {
@@ -161,7 +163,8 @@ namespace HotelGrandioso.UI
 
             if (freeRooms.Count == 0)
             {
-                Console.WriteLine($"Inga lediga rum {inCheck} - {outCheck}"); return;
+                Console.WriteLine($"Inga lediga rum {inCheck} - {outCheck}");
+                return;
             }
 
             Console.WriteLine("Lediga rum:");
@@ -217,9 +220,10 @@ namespace HotelGrandioso.UI
             }
         }
 
-        public void Run()
+        public void StartMenu()
         {
             bool run = true;
+            Console.WriteLine("=== Hotel Grandioso ===");
             while (run)
             {
                 Console.WriteLine("1. Boka rum");
