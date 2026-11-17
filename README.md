@@ -16,8 +16,10 @@ dotnet run --project HotelGrandioso
 
 ## Databas
 
-- Databas: [SQLite eller LocalDB]
-- Migrationer: [hur du skapar och kör dem]
+- Databas: SQLite hotel.db
+Connectionstring läses från miljövariabeln "HOTEL_DB", finns i Properties/launchSettings.json.
+- Migrationer: Migrationer ligger i HotelGrandioso/Migrations/
+De körs automatiskt när programmet startar via "context.Database.Migrate(), så databasen skapas av sig själv.
 
 ## UML-klassdiagram
 
